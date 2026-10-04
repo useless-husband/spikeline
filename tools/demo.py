@@ -3,8 +3,8 @@
 
 Runs the Verilator model of the chip (build/vsim_gals) on a 0.4 s synthetic
 recording with spike detection and compression in parallel, and the noise
-PE's output (filtered signal + noise estimate) probed on out2.  Every trace
-in the picture except the raw input comes from words the hardware emitted:
+PE's output (filtered signal + noise estimate) probed on out2.  What each
+trace is made from:
 
     raw input            what the chip received
     band-passed signal   data[15:0] of the noise PE's output words

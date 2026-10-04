@@ -171,7 +171,7 @@ Verilator 5.020、Icarus 12、Yosys 0.33；Yosys 0.33 也在本機（透過 `yow
 * 路由和 PE 設定只能在晶片排空時改（STATUS 第 16 位元），硬體不會擋。
 * 晶片輸入只有 16 字的 FIFO；突發型 PE（擷取、Rice）要靠整條路徑上的時脈餘裕才能即時吸收突發
   （量測見 [throughput.md](docs/results/throughput.md)）。
-* 交換器相信 tag 是合法的通道編號（< 96）。
+* 各 PE 相信 tag 是合法的通道編號（< 96）。
 * 沒有 HALO 有的加密、無線電、ADC 或微控制器。
 
 ## 相關研究
@@ -192,9 +192,9 @@ Verilator 5.020、Icarus 12、Yosys 0.33；Yosys 0.33 也在本機（透過 `yow
   無線頻寬等限制，為什麼要在植入物上處理。
 * NEO 偵測 spike：J. F. Kaiser，ICASSP 1990；S. Mukhopadhyay、G. C. Ray，IEEE TBME，1998。
 * 中位數門檻：R. Q. Quiroga、Z. Nadasdy、Y. Ben-Shaul，Neural Computation，2004。
-* 有原始碼的硬體 spike 偵測：使用平滑 NEO 與 Butterworth 高通濾波的 FPGA 偵測器，
-  〈FPGA Design Integration of a 32-Microelectrodes Low-Latency Spike Detector in a
-  Commercial System for Intracortical Recordings〉，Digital (MDPI)，2021。
+* FPGA 上的 spike 偵測：〈FPGA Design Integration of a 32-Microelectrodes Low-Latency
+  Spike Detector in a Commercial System for Intracortical Recordings〉，Digital (MDPI)，2021
+  （依其摘要，先用 Butterworth 高通濾波再用平滑 NEO）。
 * 晶片上的神經資料壓縮：J. N. Y. Aziz 等人，256 通道錄音與差分壓縮微系統，IEEE JSSC，2009。
 * 自適應 Golomb-Rice 參數：M. J. Weinberger、G. Seroussi、G. Sapiro，LOCO-I，IEEE TIP，2000。
 * 非同步 FIFO：C. E. Cummings，SNUG 2002。

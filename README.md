@@ -199,7 +199,7 @@ locally.
 * The chip's input has a 16-word FIFO; bursty PEs (snippet, Rice) need
   clock headroom along the whole path to absorb bursts in real time
   (measured in [throughput.md](docs/results/throughput.md)).
-* The crossbar trusts that tags are valid channel numbers (< 96).
+* The PEs trust that tags are valid channel numbers (< 96).
 * No encryption, radio, ADC or microcontroller, which HALO has.
 
 ## Related work
@@ -229,10 +229,10 @@ locally.
 * Median-based threshold: R. Q. Quiroga, Z. Nadasdy, Y. Ben-Shaul,
   "Unsupervised spike detection and sorting with wavelets and
   superparamagnetic clustering", Neural Computation, 2004.
-* Hardware spike detection with source code: an FPGA spike detector using a
-  smoothed NEO and a Butterworth high-pass filter, "FPGA Design Integration
-  of a 32-Microelectrodes Low-Latency Spike Detector in a Commercial System
-  for Intracortical Recordings", Digital (MDPI), 2021.
+* Spike detection on an FPGA: "FPGA Design Integration of a
+  32-Microelectrodes Low-Latency Spike Detector in a Commercial System for
+  Intracortical Recordings", Digital (MDPI), 2021, which (per its abstract)
+  uses a smoothed NEO after a Butterworth high-pass filter.
 * On-chip neural data compression: J. N. Y. Aziz et al., "256-Channel Neural
   Recording and Delta Compression Microsystem With 3D Electrodes", IEEE JSSC,
   2009 (cited by HALO).
