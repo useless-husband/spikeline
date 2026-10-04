@@ -121,3 +121,7 @@ bench: check-python build/vsim_gals
 # one-line bugs in the RTL and the model; each must make a test fail
 mutants: check-python
 	$(PYTHON) tools/mutate.py | tee build/mutants.md
+
+# switching activity from toggle coverage (a relative proxy, not power)
+activity: check-python build/vsim_cov
+	$(PYTHON) tools/activity.py

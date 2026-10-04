@@ -46,15 +46,15 @@ Spike detection and compression in parallel (pipeline c), default settings, rand
 
 | SNR | mode | snippet packets | words compared | identical | compressed words | decoded = input |
 |---:|---|---:|---:|---|---:|---|
-| 2 | energy | 1817 | 1630228 | yes | 1570267 | yes |
-| 2 | amplitude | 755 | 1595182 | yes | 1570267 | yes |
-| 3 | energy | 2392 | 1649532 | yes | 1570596 | yes |
-| 3 | amplitude | 2005 | 1636761 | yes | 1570596 | yes |
-| 4 | energy | 3572 | 1688861 | yes | 1570985 | yes |
-| 4 | amplitude | 3847 | 1697936 | yes | 1570985 | yes |
-| 5 | energy | 4847 | 1731312 | yes | 1571361 | yes |
-| 5 | amplitude | 4805 | 1729926 | yes | 1571361 | yes |
-| 6 | energy | 5542 | 1754679 | yes | 1571793 | yes |
-| 6 | amplitude | 4993 | 1736562 | yes | 1571793 | yes |
-| 8 | energy | 5811 | 1764500 | yes | 1572737 | yes |
-| 8 | amplitude | 5173 | 1743446 | yes | 1572737 | yes |
+| 2 | energy | 1817 | 1610396 | yes | 1550435 | yes |
+| 2 | amplitude | 755 | 1575350 | yes | 1550435 | yes |
+| 3 | energy | 2392 | 1629695 | yes | 1550759 | yes |
+| 3 | amplitude | 2005 | 1616924 | yes | 1550759 | yes |
+| 4 | energy | 3572 | 1669012 | yes | 1551136 | yes |
+| 4 | amplitude | 3847 | 1678087 | yes | 1551136 | yes |
+| 5 | energy | 4847 | 1711481 | yes | 1551530 | yes |
+| 5 | amplitude | 4805 | 1710095 | yes | 1551530 | yes |
+| 6 | energy | 5542 | 1734836 | yes | 1551950 | yes |
+| 6 | amplitude | 4993 | 1716719 | yes | 1551950 | yes |
+| 8 | energy | 5811 | 1744670 | yes | 1552907 | yes |
+| 8 | amplitude | 5173 | 1723616 | yes | 1552907 | yes |
