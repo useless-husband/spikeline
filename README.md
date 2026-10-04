@@ -18,10 +18,14 @@ the algorithms it implements (see [Related work](#related-work)).
 [繁體中文說明](README.zh-TW.md) · [Course-style report](docs/report.md) ·
 [Design notes](docs/DESIGN.md) · [導讀（給初學者）](docs/導讀.zh-TW.md)
 
-![Three of 96 channels: raw input, band-passed signal with detected and true spikes, NEO energy against the adaptive threshold, and the aligned snippets, all taken from the simulated chip's output](docs/media/demo.png)
+![Three of 96 channels: raw input, band-passed signal with detected and true spikes, NEO energy against the adaptive threshold, and the aligned snippets from the simulated chip](docs/media/demo.png)
 
-*Rendered by `make demo` from the words the simulated chip emitted (only the
-raw input column is not chip output).  Synthetic recording, SNR 5.*
+*Rendered by `make demo` from the words the simulated chip emitted: the
+band-passed signal and noise estimate (probed on a spare output port), the
+snippet packets and their peak times.  The energy trace is recomputed from
+the chip's band-passed output with the PE's formula, the threshold from its
+noise words; the raw input and the true spike times come from the
+generator.  Synthetic recording, SNR 5.*
 
 ## What is inside
 
@@ -163,10 +167,10 @@ make venv          # once: .venv with numpy, scipy, matplotlib, cocotb, pytest
 make test          # lint + golden model + cocotb unit tests + whole-chip tests (a few minutes)
 make demo          # build/demo/demo.png
 make metrics       # detection and compression tables, with the hardware check (about 7 min)
-make bench         # cycles per sample, real-time check, latency (about 10 min)
+make bench         # cycles per sample, real-time check, latency (10-20 min)
 make quant         # filter fixed-point sweep
 make synth         # Yosys resource report
-make mutants       # mutation check (about 3 min)
+make mutants       # mutation check (several minutes)
 make activity      # switching-activity proxy
 ```
 

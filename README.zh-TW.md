@@ -14,10 +14,11 @@ Manohar 等人）：一群各做一件事的加速器，每個在自己的時脈
 [English](README.md) · [課程式完整報告](docs/report.md) ·
 [設計說明](docs/DESIGN.md) · [導讀（給初學者）](docs/導讀.zh-TW.md)
 
-![三個通道：原始輸入、帶通後訊號與偵測到/真實的 spike、NEO 能量與自適應門檻、對齊後的波形片段，全部取自模擬晶片的輸出](docs/media/demo.png)
+![三個通道：原始輸入、帶通後訊號與偵測到/真實的 spike、NEO 能量與自適應門檻、模擬晶片切出的對齊波形片段](docs/media/demo.png)
 
-*由 `make demo` 從模擬晶片吐出的資料畫成（只有最左欄的原始輸入不是晶片輸出）。
-合成資料，SNR 5。*
+*由 `make demo` 從模擬晶片吐出的資料畫成：帶通後訊號和雜訊估計（從空的輸出埠監看）、
+波形片段封包和峰值時間。能量曲線是用晶片的帶通輸出依 PE 的公式重算，門檻來自晶片的雜訊字；
+原始輸入和真實 spike 時間來自資料產生器。合成資料，SNR 5。*
 
 ## 裡面有什麼
 
@@ -146,10 +147,10 @@ make venv          # 第一次：建立 .venv，裝 numpy、scipy、matplotlib�
 make test          # lint + 黃金模型 + cocotb 單元測試 + 整顆晶片測試（幾分鐘）
 make demo          # build/demo/demo.png
 make metrics       # 偵測與壓縮表格，含硬體比對（約 7 分鐘）
-make bench         # 每樣本拍數、即時檢查、延遲（約 10 分鐘）
+make bench         # 每樣本拍數、即時檢查、延遲（10–20 分鐘）
 make quant         # 濾波器定點數分析
 make synth         # Yosys 資源報告
-make mutants       # 突變測試（約 3 分鐘）
+make mutants       # 突變測試（幾分鐘）
 make activity      # 切換活動量參考指標
 ```
 
