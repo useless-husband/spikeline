@@ -86,6 +86,6 @@ module sl_cfg_cdc #(
         assign take = wr;
         assign word = wdata;
         assign busy = pend;
-        wire unused_sync = clk_b ^ rst_b;   // domain b is domain a here
+        wire unused_sync = clk_a ^ rst_a ^ applied;   // domain b is domain a here
     end
 endmodule
