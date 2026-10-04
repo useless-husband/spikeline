@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Everything comes from Ubuntu's own packages: verilator (5.020 on 24.04),
+# iverilog (12), yosys (0.33).  The RTL keeps to a conservative
+# SystemVerilog subset (no packages, interfaces, structs, enums or casts to
+# parameter widths) for these older versions.  The versions in use are
+# printed below.
+
+jobs:
+  lint-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install HDL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends verilator iverilog
+          verilator --version
+          iverilog -V 2>&1 | head -1
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Filter coefficients match the generator
+        run: make coefs PYTHON=python && git diff --exit-code rtl/bandpass_coefs.svh model/sl_coefs.py
+      - name: Verilator lint (-Wall), three builds
+        run: make lint
+      - name: Golden-model tests and cocotb unit tests (Icarus)
+        run: make unit PYTHON=python
+
+  system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install HDL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends verilator iverilog
+          verilator --version
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Whole-chip tests (Verilator vs golden model; GALS, synchronous and mixed builds)
+        run: make system PYTHON=python
+      - name: Mutation check (every mutant must be caught)
+        run: make mutants PYTHON=python
+      - name: Demo picture from the simulated chip
+        run: make demo PYTHON=python
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo
+          path: build/demo/demo.png
+
+  synth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Yosys
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends yosys
+          yosys -V
+      - name: synth_xilinx for the XC7S50, each PE and the whole chip (fails if it does not fit)
+        run: make synth
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthesis-report
+          path: synth/report.md

@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>spikeline block diagram</title>
+  <rect x="0" y="0" width="960" height="600" fill="#fcfcfb"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#52514e"/>
+    </marker>
+  </defs>
+
+  <!-- fabric clock domain -->
+  <rect x="20" y="20" width="430" height="560" fill="#eef3fb" stroke="#2a78d6" stroke-width="1.5"/>
+  <text x="32" y="42" fill="#0b0b0b" font-weight="bold">fabric clock domain (clk_fab)</text>
+
+  <!-- register bus -->
+  <rect x="40" y="60" width="390" height="56" fill="#ffffff" stroke="#52514e"/>
+  <text x="52" y="82" fill="#0b0b0b" font-weight="bold">registers</text>
+  <text x="52" y="102" fill="#52514e">ROUTE[0..8]  PE_CFG[0..5]  STATUS (drained)  word counters</text>
+
+  <!-- input port -->
+  <text x="40" y="168" fill="#0b0b0b" font-weight="bold">ADC stream</text>
+  <text x="40" y="186" fill="#52514e">96 ch x 30 kHz x 16 bit</text>
+  <text x="40" y="202" fill="#52514e">= 46.08 Mbit/s</text>
+  <rect x="40" y="214" width="110" height="34" fill="#ffffff" stroke="#52514e"/>
+  <text x="52" y="236" fill="#0b0b0b">in port FIFO</text>
+  <line x1="150" y1="231" x2="208" y2="231" stroke="#52514e" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- crossbar -->
+  <rect x="210" y="140" width="130" height="400" fill="#ffffff" stroke="#2a78d6" stroke-width="2"/>
+  <text x="222" y="164" fill="#0b0b0b" font-weight="bold">crossbar</text>
+  <text x="222" y="184" fill="#52514e">7 sources</text>
+  <text x="222" y="200" fill="#52514e">9 destinations</text>
+  <text x="222" y="216" fill="#52514e">route register</text>
+  <text x="222" y="232" fill="#52514e">per destination;</text>
+  <text x="222" y="248" fill="#52514e">a source may feed</text>
+  <text x="222" y="264" fill="#52514e">several (eager</text>
+  <text x="222" y="280" fill="#52514e">fork, no copies</text>
+  <text x="222" y="296" fill="#52514e">lost or doubled)</text>
+  <line x1="275" y1="116" x2="275" y2="138" stroke="#52514e" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- output ports -->
+  <rect x="40" y="420" width="110" height="34" fill="#ffffff" stroke="#52514e"/>
+  <text x="52" y="442" fill="#0b0b0b">out0 FIFO</text>
+  <rect x="40" y="462" width="110" height="34" fill="#ffffff" stroke="#52514e"/>
+  <text x="52" y="484" fill="#0b0b0b">out1 FIFO</text>
+  <rect x="40" y="504" width="110" height="34" fill="#ffffff" stroke="#52514e"/>
+  <text x="52" y="526" fill="#0b0b0b">out2 FIFO</text>
+  <line x1="208" y1="437" x2="152" y2="437" stroke="#52514e" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="208" y1="479" x2="152" y2="479" stroke="#52514e" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="208" y1="521" x2="152" y2="521" stroke="#52514e" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="40" y="410" fill="#52514e">to radio / host</text>
+
+  <!-- tiles -->
+  <g>
+    <text x="470" y="42" fill="#0b0b0b" font-weight="bold">PE tiles: each PE in its own clock domain (GALS)</text>
+    <text x="470" y="60" fill="#52514e">async FIFO = Gray-code pointers + two-flop synchronisers</text>
+  </g>
+  <g id="tiles">
+    <!-- tile template rows: y = 80 + 82*i -->
+    <g transform="translate(0,80)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">band-pass 300-6000 Hz</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">2 biquads, 1 multiplier, 13 cyc/sample</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_bp</text>
+    </g>
+    <g transform="translate(0,162)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">noise estimator</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">running median of |x| per channel</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_noise</text>
+    </g>
+    <g transform="translate(0,244)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">NEO detector</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">x[n]^2 - x[n-1]x[n+1] &gt; C noise^2</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_neo</text>
+    </g>
+    <g transform="translate(0,326)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">snippet extractor</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">peak-aligned 32-sample windows</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_snip</text>
+    </g>
+    <g transform="translate(0,408)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">linear predictor</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">order 0/1/2, restarts every block</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_pred</text>
+    </g>
+    <g transform="translate(0,490)">
+      <rect x="470" y="0" width="470" height="70" fill="#fff6f1" stroke="#eb6834" stroke-dasharray="5 3"/>
+      <rect x="480" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="487" y="39" font-size="11">async FIFO</text>
+      <rect x="556" y="8" width="240" height="54" fill="#ffffff" stroke="#0b0b0b"/>
+      <text x="566" y="28" font-weight="bold">adaptive Rice coder</text>
+      <text x="566" y="48" fill="#52514e" font-size="12">lossless, 32-bit packed words</text>
+      <rect x="810" y="18" width="62" height="34" fill="#ffffff" stroke="#52514e"/><text x="817" y="39" font-size="11">async FIFO</text>
+      <text x="880" y="40" fill="#eb6834" font-size="12">clk_rice</text>
+    </g>
+  </g>
+  <!-- links crossbar <-> tiles (in and out shown as one double arrow per tile) -->
+  <g stroke="#52514e" stroke-width="1.2">
+    <line x1="342" y1="115" x2="478" y2="115" marker-end="url(#a)"/>
+    <line x1="342" y1="197" x2="478" y2="197" marker-end="url(#a)"/>
+    <line x1="342" y1="279" x2="478" y2="279" marker-end="url(#a)"/>
+    <line x1="342" y1="361" x2="478" y2="361" marker-end="url(#a)"/>
+    <line x1="342" y1="443" x2="478" y2="443" marker-end="url(#a)"/>
+    <line x1="342" y1="525" x2="478" y2="525" marker-end="url(#a)"/>
+  </g>
+  <path d="M906,148 L906,152 L452,152 L452,560 L344,560" fill="none" stroke="#52514e" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#a)"/>
+  <text x="352" y="578" fill="#52514e" font-size="11">every tile output returns to the crossbar (dashed)</text>
+  <text x="222" y="330" fill="#0b0b0b" font-weight="bold">pipelines</text>
+  <text x="222" y="350" fill="#52514e" font-size="12">(a) in &#8594; band-pass</text>
+  <text x="222" y="366" fill="#52514e" font-size="12">&#8594; noise &#8594; NEO</text>
+  <text x="222" y="382" fill="#52514e" font-size="12">&#8594; snippet &#8594; out0</text>
+  <text x="222" y="402" fill="#52514e" font-size="12">(b) in &#8594; predictor</text>
+  <text x="222" y="418" fill="#52514e" font-size="12">&#8594; Rice &#8594; out1</text>
+  <text x="222" y="438" fill="#52514e" font-size="12">(c) both at once:</text>
+  <text x="222" y="454" fill="#52514e" font-size="12">in is multicast</text>
+</svg>

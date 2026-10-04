@@ -57,7 +57,7 @@ unit: check-python
 	$(PYTHON) -m pytest -q tests/model tests/unit
 
 build/vm_%/Vspikeline_top.h: $(RTL) $(INC)
-	rm -rf build/vm_$*
+	rm -rf build/vm_$* && mkdir -p build
 	$(VERILATOR) $(VFLAGS) $(G_$*) -Mdir build/vm_$* $(RTL)
 
 build/vsim_%: build/vm_%/Vspikeline_top.h sim/sim_main.cpp
@@ -116,3 +116,8 @@ quant: check-python
 # cycles per sample, minimum clock per PE, real-time check, latency
 bench: check-python build/vsim_gals
 	$(PYTHON) tools/bench.py
+
+# --------------------------------------------------------- mutation checks
+# one-line bugs in the RTL and the model; each must make a test fail
+mutants: check-python
+	$(PYTHON) tools/mutate.py | tee build/mutants.md
