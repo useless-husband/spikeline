@@ -12,7 +12,8 @@
 //        = 16 ones, then u in 20 bits                   (q >= 16: escape)
 // In the first frame of a block the predictor sends the samples themselves,
 // which would almost all be escapes (36 bits, 2 cycles each: a 192-cycle
-// burst per block); there e is sent as 20 plain bits in one cycle instead.
+// burst per block); there e is sent as 20 plain bits in one cycle instead
+// (it still updates A, so the adaptation starts from the data).
 // Codes are packed MSB-first into 32-bit words.  After the final sample of
 // a block the packer pads with zeros to a word boundary and marks that word
 // `last`; tag = block number (mod 256).
@@ -118,7 +119,7 @@ module pe_rice #(
 
     always_ff @(posedge clk)
         if (clearing) acc[cidx] <= '0;
-        else if (in_fire) acc[ch] <= first ? A_INIT : a_next;
+        else if (in_fire) acc[ch] <= a_next;
 
     always_ff @(posedge clk) begin
         if (rst || clr) begin

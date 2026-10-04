@@ -6,7 +6,8 @@ is a real check of losslessness rather than the encoder checking itself.
 
 Stream layout (see docs/report.md, section "Compression"): blocks of
 2^block_log2 frames x nch samples, each block starting on a 32-bit word
-boundary.  First frame of a block: each sample as 20 plain bits.  Other
+boundary.  First frame of a block: each sample as 20 plain bits (which
+still update the running mean).  Other
 samples: q ones, a zero, k remainder bits (k from the channel's running
 mean, reset at every block), or Q_ESC ones followed by a 20-bit raw value.  The residual is zigzag-coded and added to a fixed
 linear prediction of order min(order, frame index within the block).
@@ -42,6 +43,7 @@ def decode_block(bits: str, pos: int, nch: int, nframes: int, order: int):
                 v = int(bits[pos:pos + RAW_BITS], 2)
                 pos += RAW_BITS
                 e = v - (1 << RAW_BITS) if v >> (RAW_BITS - 1) else v
+                acc[c] = acc[c] - (acc[c] >> 4) + (2 * e if e >= 0 else -2 * e - 1)
                 row[c] = e
                 x2[c] = x1[c]
                 x1[c] = e

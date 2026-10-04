@@ -356,9 +356,10 @@ class Rice:
     Per channel, A tracks 16 x the running mean of u = zigzag(e)
     (A <- A - A/16 + u).  k = floor(log2(A >> 4)) (0 if that is 0), at most
     K_MAX.  Code for u: q = u >> k ones, a zero, then the low k bits of u.
-    If q >= Q_ESC: Q_ESC ones then u in RAW_BITS bits.  In the first frame of
-    a block (where the predictor sends the samples themselves) each residual
-    is sent as RAW_BITS plain bits and A is reset to A_INIT; after the last
+    If q >= Q_ESC: Q_ESC ones then u in RAW_BITS bits.  A restarts from
+    A_INIT at the first frame of a block, where the predictor sends the
+    samples themselves; those are sent as RAW_BITS plain bits (but still
+    update A).  After the last
     sample of a block the packer pads to a word boundary and marks that word
     `last`.
     """
@@ -372,15 +373,16 @@ class Rice:
     def _pieces(self, e, first):
         """(value, length) code pieces for one frame, two pieces per sample."""
         e = ((np.asarray(e, dtype=np.int64) & 0xFFFFF) ^ 0x80000) - 0x80000  # sign-extend 20 bits
+        a = np.full(self.nch, A_INIT, dtype=np.int64) if first else self.a
+        u = np.where(e >= 0, 2 * e, -2 * e - 1)
         if first:
-            # first frame of a block: residual sent as 20 raw bits, A starts at A_INIT
-            self.a = np.full(self.nch, A_INIT, dtype=np.int64)
+            # first frame of a block: residual sent as 20 plain bits; it still
+            # updates A, which gives the adaptation a data-driven start
+            self.a = a - (a >> 4) + u
             zero = np.zeros(self.nch, dtype=np.int64)
             return (np.stack([e & 0xFFFFF, zero], 1).reshape(-1),
                     np.stack([np.full(self.nch, RAW_BITS), zero], 1).reshape(-1))
-        a = self.a
         k = np.minimum(floor_log2(a >> 4), K_MAX)
-        u = np.where(e >= 0, 2 * e, -2 * e - 1)
         q = u >> k
         esc = q >= Q_ESC
         v1 = np.where(esc, (1 << Q_ESC) - 1, (((1 << q) - 1) << (k + 1)) | (u & ((1 << k) - 1)))

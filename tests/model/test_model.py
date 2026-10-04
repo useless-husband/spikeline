@@ -19,10 +19,10 @@ def encode(x, order, blog):
 
 def test_rice_bits_by_hand():
     # one channel, order 0, blocks of 2 frames.  Frame 0 (first of a block):
-    # e = 3 as 20 plain bits; A stays 256 -> k = 4.  Frame 1: u = zigzag(-2)
-    # = 3 -> q = 0 -> "0" + "0011".  Then zero padding to 32 bits.
+    # e = 3 as 20 plain bits; A = 256 - 16 + zigzag(3) = 246 -> k = 3.
+    # Frame 1: u = zigzag(-2) = 3 -> q = 0 -> "0" + "011".  Then zero padding.
     w = encode(np.array([[3], [-2]]), 0, 1)
-    assert w.tolist() == [[int((f"{3:020b}" + "00011").ljust(32, "0"), 2), 0, 1]]
+    assert w.tolist() == [[int((f"{3:020b}" + "0011").ljust(32, "0"), 2), 0, 1]]
     # escape: u = 60000, q = 3750 >= 16 -> 16 ones, then u in 20 bits
     w = encode(np.array([[0], [30000]]), 0, 1)
     bits = "".join(f"{v:032b}" for v in w[:, 0])
