@@ -237,4 +237,5 @@ fabric.  Narrowing each destination's mux to the bits it reads (an estimated
 * Real-time bench: the input paced like a real ADC, overruns counted.  It
   found two design bugs (config acknowledge race, Rice burst) that the
   functional tests could not, because they only show up when the chip runs
-  close to its minimum clock.
+  close to its minimum clock.  Two short ADC-paced tests in
+  `tests/system/test_realtime.py` now guard against both in `make test`.

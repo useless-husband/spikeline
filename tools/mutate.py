@@ -65,7 +65,8 @@ MUTANTS = [
      [U + "test_async_fifo.py::test_async_fifo_depth8"]),
     ("cdc_early_ack", "rtl/sl_cfg_cdc.sv",
      "assign applied = (take && !word[31]) || (pend && pe_idle && started);", "assign applied = take;",
-     "config crossing: acknowledged before the clear sweep ran", [U + "test_cfg_cdc.py"]),
+     "config crossing: acknowledged before the clear sweep ran",
+     [U + "test_cfg_cdc.py", "tests/system/test_realtime.py::test_clear_then_feed_keeps_up"]),
     ("xbar_fork", "rtl/sl_xbar.sv", "if (rst || sel_wr || mine_fired[d]) done[d] <= 1'b0;",
      "if (rst || sel_wr) done[d] <= 1'b0;", "crossbar: multicast never re-arms", [SYS]),
     ("xbar_route", "rtl/sl_xbar.sv", "assign dst_bus[d*W +: W] = src_pad[s[2:0]*W +: W];",
@@ -97,6 +98,7 @@ def run_mutant(m):
     py = sys.executable
     results = []
     if any(s.startswith("tests/system") for s in suites):
+        # system suites need the simulator built from the mutated RTL
         rc, log = sh("make build/vsim_gals", d)
         if rc:
             return mid, path, what, "ERROR", "the mutated design did not build: " + log[-200:]

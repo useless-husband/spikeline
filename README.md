@@ -67,7 +67,7 @@ jobs) with the commands shown.  Simulation only: nothing here has run on an
 FPGA or silicon.
 
 **Verification** (`make test`: lint, 18 golden-model tests, 11 cocotb unit
-suites, 29 whole-chip Verilator tests)
+suites, 31 whole-chip Verilator tests)
 
 * Every PE matches the golden model word for word under random valid/ready
   gaps (cocotb + Icarus).
@@ -79,6 +79,9 @@ suites, 29 whole-chip Verilator tests)
   (spike -> drain -> compression -> drain -> both), and on 24 randomised
   configurations (routing, PE settings, clock periods and phases, jitter,
   backpressure; GALS, synchronous and mixed builds).
+* Two real-time regression tests feed the chip at the ADC's pace with the
+  PE under test clocked only 3 % above its need, and require that no sample
+  is ever late (they catch both timing bugs listed in the CHANGELOG).
 * `make metrics` runs the chip on 12 two-second recordings (6 SNRs x 2
   detector modes): 1.58-1.74 million output words per run, all identical
   to the model, and the compressed stream decodes to the exact input.
@@ -174,8 +177,9 @@ make mutants       # mutation check (several minutes)
 make activity      # switching-activity proxy
 ```
 
-A run on a fresh clone in a directory whose name has spaces and CJK
-characters (compiler and simulator lines left out):
+A run of `make test` and `make demo` (compiler and simulator lines left
+out; the same targets were also run on a fresh clone in a directory whose
+name has spaces and CJK characters):
 
 ```
 $ make test
@@ -183,9 +187,9 @@ lint: verilator -Wall clean (GALS, synchronous and mixed builds)
 ".venv/bin/python" -m pytest -q tests/model tests/unit
 .............................                                            [100%]
 29 passed in 17.17s
-".venv/bin/python" -m pytest -q tests/system
-.............................                                            [100%]
-29 passed in 12.99s
+.venv/bin/python" -m pytest -q tests/system
+...............................                                          [100%]
+31 passed in 14.81s
 $ make demo
 ".venv/bin/python" tools/demo.py --out build/demo/demo.png
 wrote build/demo/demo.png (246 KB): 1183 packets, compression 1.855x

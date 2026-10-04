@@ -292,7 +292,7 @@ max(u) < 2^24.  Residuals of order 2 fit 18 bits; the coder accepts 20.
 | golden model | hand-computed bitstream, decoder round trips for every order and block size, each block decoded alone, filter vs. double precision, median tracker vs. true median, NEO vs. formula, generator reproducibility | `tests/model` | 18 tests |
 | PE unit | each PE vs. the model with random valid/ready gaps, extreme inputs (full-scale steps, -32768, ties), 8 and 96 channels, clear; throughput assertions | `tests/unit` (cocotb, Icarus) | 8 suites |
 | CDC | async FIFO, 7 ratios x 4 densities x 2 depths; configuration crossing, 5 ratios; jitter injection on | `tests/unit` | 3 suites |
-| whole chip | register map; spike, compression and parallel pipelines; run-time reconfiguration; 24 randomised configurations; three builds | `tests/system` (Verilator) | 29 tests |
+| whole chip | register map; spike, compression and parallel pipelines; run-time reconfiguration; 24 randomised configurations; three builds; two real-time regressions (ADC-paced, 3 % clock headroom, no late sample) | `tests/system` (Verilator) | 31 tests |
 | long runs | 12 x 2 s recordings through the chip, every word compared, decoded | `make metrics` | 12 runs |
 | lint | `verilator --lint-only -Wall`, three builds | `make lint` | clean |
 | mutation | 19 one-line bugs, each must fail a suite | `make mutants` | 19/19 caught |
@@ -312,7 +312,7 @@ routing.  A failing seed is printed and can be replayed with
 
 ### 9.1 Bit-exactness
 
-All 58 pytest tests pass (`make test`).  In the long runs of
+All 60 pytest tests pass (`make test`).  In the long runs of
 `make metrics` the chip produced between 1.58 and 1.74 million output words per two-second
 recording (snippets and compressed words); every word matched the golden
 model, and every compressed stream decoded to the exact input.
@@ -597,6 +597,10 @@ sample per cycle.
   mutant killed because the test command broke on the space in the
   interpreter's path.  A control run on an unchanged copy now has to pass
   every suite before mutants are counted.
+* **Regression tests for timing bugs.**  Both timing bugs above are now
+  covered by `tests/system/test_realtime.py`, which feeds the chip at the
+  ADC's pace with the PE under test only 3 % above its need; the
+  configuration mutant `cdc_early_ack` fails it.
 * **Fresh-checkout build.**  Verilator did not create `build/` itself;
   found when the mutation tool built a copy without it.
 
