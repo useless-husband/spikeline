@@ -174,6 +174,23 @@ make mutants       # mutation check (several minutes)
 make activity      # switching-activity proxy
 ```
 
+A run on a fresh clone in a directory whose name has spaces and CJK
+characters (compiler and simulator lines left out):
+
+```
+$ make test
+lint: verilator -Wall clean (GALS, synchronous and mixed builds)
+".venv/bin/python" -m pytest -q tests/model tests/unit
+.............................                                            [100%]
+29 passed in 17.17s
+".venv/bin/python" -m pytest -q tests/system
+.............................                                            [100%]
+29 passed in 12.99s
+$ make demo
+".venv/bin/python" tools/demo.py --out build/demo/demo.png
+wrote build/demo/demo.png (246 KB): 1183 packets, compression 1.855x
+```
+
 On macOS, double-click `跑跑看.command` to build the simulator, run the
 demo and open the picture (it checks for the tools and explains what is
 missing).  CI (`.github/workflows/ci.yml`) uses Ubuntu's packaged Verilator
