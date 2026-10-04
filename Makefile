@@ -38,7 +38,7 @@ all: test
 
 # ---------------------------------------------------------------- coefficients
 coefs:
-	$(PYTHON) tools/gen_coefs.py
+	"$(PYTHON)" tools/gen_coefs.py
 
 # ------------------------------------------------------------------------ lint
 lint:
@@ -49,12 +49,12 @@ lint:
 
 # ----------------------------------------------------------------------- tests
 check-python:
-	@$(PYTHON) -c "import cocotb, pytest, numpy, scipy" 2>/dev/null || { \
+	@"$(PYTHON)" -c "import cocotb, pytest, numpy, scipy" 2>/dev/null || { \
 	  echo "cocotb/pytest/numpy/scipy not found for $(PYTHON)."; \
 	  echo "Run 'make venv' once (creates $(VENV)), or pass PYTHON=/path/to/python."; exit 1; }
 
 unit: check-python
-	$(PYTHON) -m pytest -q tests/model tests/unit
+	"$(PYTHON)" -m pytest -q tests/model tests/unit
 
 build/vm_%/Vspikeline_top.h: $(RTL) $(INC)
 	rm -rf build/vm_$* && mkdir -p build
@@ -69,7 +69,7 @@ build/vsim_%: build/vm_%/Vspikeline_top.h sim/sim_main.cpp
 SIMS := build/vsim_gals build/vsim_sync build/vsim_mixed
 
 system: check-python $(SIMS)
-	$(PYTHON) -m pytest -q tests/system
+	"$(PYTHON)" -m pytest -q tests/system
 
 test: lint unit system
 
@@ -97,7 +97,7 @@ synth: $(addprefix build/synth/,$(addsuffix .json,$(SYNTH_TOPS)))
 # Picture of three channels: raw, band-passed, NEO energy + threshold, detected
 # spikes and snippets, all from the simulated chip's output words.
 demo: check-python build/vsim_gals
-	$(PYTHON) tools/demo.py --out build/demo/demo.png
+	"$(PYTHON)" tools/demo.py --out build/demo/demo.png
 	@echo "open build/demo/demo.png"
 
 docs-media: demo
@@ -107,21 +107,21 @@ docs-media: demo
 # -------------------------------------------------------------------- results
 # detection precision/recall vs SNR and compression ratio (about 7 minutes)
 metrics: check-python build/vsim_gals
-	$(PYTHON) tools/metrics.py --hw
+	"$(PYTHON)" tools/metrics.py --hw
 
 # fixed-point analysis of the band-pass filter
 quant: check-python
-	$(PYTHON) tools/quant_analysis.py
+	"$(PYTHON)" tools/quant_analysis.py
 
 # cycles per sample, minimum clock per PE, real-time check, latency
 bench: check-python build/vsim_gals
-	$(PYTHON) tools/bench.py
+	"$(PYTHON)" tools/bench.py
 
 # --------------------------------------------------------- mutation checks
 # one-line bugs in the RTL and the model; each must make a test fail
 mutants: check-python
-	$(PYTHON) tools/mutate.py | tee build/mutants.md
+	"$(PYTHON)" tools/mutate.py | tee build/mutants.md
 
 # switching activity from toggle coverage (a relative proxy, not power)
 activity: check-python build/vsim_cov
-	$(PYTHON) tools/activity.py
+	"$(PYTHON)" tools/activity.py
