@@ -45,8 +45,8 @@ WARMUP_DEFAULT = 1024  # frames before detections are allowed (34 ms)
 M_W = 24               # tracker width, Q16.8
 
 # --------------------------------------------------------------------- NEO
-NEO_C_DEFAULT = 2400   # energy mode: threshold = noise^2 * C >> 16 (noise in 1/16 LSB)
-AMP_C_DEFAULT = 1700   # amplitude mode: threshold = noise * C >> 12
+NEO_C_DEFAULT = 2700   # energy mode: threshold = noise^2 * C >> 16 (noise in 1/16 LSB)
+AMP_C_DEFAULT = 1500   # amplitude mode: threshold = noise * C >> 12
 REFR_DEFAULT = 30      # refractory period in frames (1 ms)
 MODE_NEO, MODE_AMP = 0, 1
 

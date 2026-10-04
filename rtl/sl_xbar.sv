@@ -11,7 +11,7 @@
 // Rewriting a route clears all done bits, so routes may only be changed
 // while the fabric is drained (see STATUS in spikeline_top).
 module sl_xbar #(
-    parameter int NS = 7,
+    parameter int NS = 7,          // at most 7
     parameter int ND = 9,
     parameter int W  = 41
 ) (
@@ -50,19 +50,20 @@ module sl_xbar #(
         assign src_fire[s] = src_valid[s] && src_ready[s];
     end
 
-    // destination side: a one-hot multiplexer per destination
-    always_comb
-        for (int d = 0; d < ND; d++) begin
-            dst_valid[d] = 1'b0;
-            dst_bus[d*W +: W] = '0;
-            mine_fired[d] = 1'b0;
-            for (int s = 0; s < NS; s++)
-                if (hit[d*NS+s]) begin
-                    dst_valid[d] = src_valid[s] && !done[d];
-                    dst_bus[d*W +: W] = src_bus[s*W +: W];
-                    mine_fired[d] = src_fire[s];
-                end
-        end
+    // destination side: one 8:1 multiplexer per destination, selected by the
+    // low three bits of its route register (NS <= 7, so index 7 and every
+    // "not connected" value select nothing valid; the data is then don't-care)
+    logic [8*W-1:0] src_pad;
+    logic [15:0]    valid_pad, fire_pad;
+    assign src_pad   = {{((8 - NS) * W){1'b0}}, src_bus};
+    assign valid_pad = {{(16 - NS){1'b0}}, src_valid};
+    assign fire_pad  = {{(16 - NS){1'b0}}, src_fire};
+    for (genvar d = 0; d < ND; d++) begin : g_mux
+        wire [3:0] s = sel[4*d +: 4];
+        assign dst_bus[d*W +: W] = src_pad[s[2:0]*W +: W];
+        assign dst_valid[d] = valid_pad[s] && !done[d];
+        assign mine_fired[d] = fire_pad[s];
+    end
 
     always_ff @(posedge clk)
         for (int d = 0; d < ND; d++)

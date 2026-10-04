@@ -80,3 +80,39 @@ venv:
 
 clean:
 	rm -rf build
+
+# ------------------------------------------------------------------ synthesis
+SYNTH_TOPS := pe_bandpass pe_noise pe_neo pe_snippet pe_predict pe_rice spikeline_top
+
+build/synth/%.json: $(RTL) $(INC)
+	@mkdir -p build/synth
+	$(YOSYS) -q -l build/synth/$*.log -p "read_verilog -defer -sv -Irtl $(RTL); \
+	  synth_xilinx -family xc7 -top $*; tee -q -o build/synth/$*.txt stat -tech xilinx; \
+	  tee -q -o build/synth/$*.json stat -json"
+
+synth: $(addprefix build/synth/,$(addsuffix .json,$(SYNTH_TOPS)))
+	python3 tools/synth_report.py build/synth --check
+
+# ----------------------------------------------------------------------- demo
+# Picture of three channels: raw, band-passed, NEO energy + threshold, detected
+# spikes and snippets, all from the simulated chip's output words.
+demo: check-python build/vsim_gals
+	$(PYTHON) tools/demo.py --out build/demo/demo.png
+	@echo "open build/demo/demo.png"
+
+docs-media: demo
+	cp build/demo/demo.png docs/media/demo.png
+	@s=$$(wc -c < docs/media/demo.png); echo "docs/media/demo.png $$s bytes"; [ $$s -lt 1000000 ]
+
+# -------------------------------------------------------------------- results
+# detection precision/recall vs SNR and compression ratio (about 7 minutes)
+metrics: check-python build/vsim_gals
+	$(PYTHON) tools/metrics.py --hw
+
+# fixed-point analysis of the band-pass filter
+quant: check-python
+	$(PYTHON) tools/quant_analysis.py
+
+# cycles per sample, minimum clock per PE, real-time check, latency
+bench: check-python build/vsim_gals
+	$(PYTHON) tools/bench.py

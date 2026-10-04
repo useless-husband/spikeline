@@ -29,7 +29,7 @@ module spikeline_top #(
     parameter int          FIFO_LOG2  = 3,
     parameter int          PORT_LOG2  = 4,
     parameter logic [31:0] NOISE_CFG  = 32'h0004_0010,   // step 16, warm-up 1024 frames
-    parameter logic [31:0] NEO_CFG    = 32'h001E_0960,   // C 2400, refractory 30, energy mode
+    parameter logic [31:0] NEO_CFG    = 32'h001E_0A8C,   // C 2700, refractory 30, energy mode
     parameter logic [31:0] PRED_CFG   = 32'h0000_001D    // order 1, blocks of 2^7 frames
 ) (
     input  logic        clk_fab,
