@@ -1,0 +1,5 @@
+cocotb==2.1.0
+pytest==9.1.1
+numpy==2.3.3
+scipy==1.16.2
+matplotlib==3.10.6
