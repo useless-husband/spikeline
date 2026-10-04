@@ -194,7 +194,7 @@ Verilator 5.020、Icarus 12、Yosys 0.33；Yosys 0.33 也在本機（透過 `yow
 * 中位數門檻：R. Q. Quiroga、Z. Nadasdy、Y. Ben-Shaul，Neural Computation，2004。
 * FPGA 上的 spike 偵測：〈FPGA Design Integration of a 32-Microelectrodes Low-Latency
   Spike Detector in a Commercial System for Intracortical Recordings〉，Digital (MDPI)，2021
-  （依其摘要，先用 Butterworth 高通濾波再用平滑 NEO）。
+  （文獻描述為先用 Butterworth 高通濾波，再用平滑 NEO）。
 * 晶片上的神經資料壓縮：J. N. Y. Aziz 等人，256 通道錄音與差分壓縮微系統，IEEE JSSC，2009。
 * 自適應 Golomb-Rice 參數：M. J. Weinberger、G. Seroussi、G. Sapiro，LOCO-I，IEEE TIP，2000。
 * 非同步 FIFO：C. E. Cummings，SNUG 2002。

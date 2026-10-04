@@ -231,8 +231,8 @@ locally.
   superparamagnetic clustering", Neural Computation, 2004.
 * Spike detection on an FPGA: "FPGA Design Integration of a
   32-Microelectrodes Low-Latency Spike Detector in a Commercial System for
-  Intracortical Recordings", Digital (MDPI), 2021, which (per its abstract)
-  uses a smoothed NEO after a Butterworth high-pass filter.
+  Intracortical Recordings", Digital (MDPI), 2021, described as using a
+  smoothed NEO after a Butterworth high-pass filter.
 * On-chip neural data compression: J. N. Y. Aziz et al., "256-Channel Neural
   Recording and Delta Compression Microsystem With 3D Electrodes", IEEE JSSC,
   2009 (cited by HALO).
