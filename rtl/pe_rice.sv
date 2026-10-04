@@ -10,6 +10,9 @@
 //   q = u >> k
 //   code = q ones, one zero, the low k bits of u       (q < 16: <= 31 bits)
 //        = 16 ones, then u in 20 bits                   (q >= 16: escape)
+// In the first frame of a block the predictor sends the samples themselves,
+// which would almost all be escapes (36 bits, 2 cycles each: a 192-cycle
+// burst per block); there e is sent as 20 plain bits in one cycle instead.
 // Codes are packed MSB-first into 32-bit words.  After the final sample of
 // a block the packer pads with zeros to a word boundary and marks that word
 // `last`; tag = block number (mod 256).
@@ -87,6 +90,10 @@ module pe_rice #(
             ch_val = {12'd0, esc_u};
             ch_len = 6'd20;
             ch_final = esc_final;
+        end else if (first) begin
+            ch_val = {12'd0, e};
+            ch_len = 6'd20;
+            ch_final = lastblk;
         end else if (esc) begin
             ch_val = 32'h0000_FFFF;
             ch_len = 6'd16;
@@ -111,7 +118,7 @@ module pe_rice #(
 
     always_ff @(posedge clk)
         if (clearing) acc[cidx] <= '0;
-        else if (in_fire) acc[ch] <= a_next;
+        else if (in_fire) acc[ch] <= first ? A_INIT : a_next;
 
     always_ff @(posedge clk) begin
         if (rst || clr) begin
@@ -137,7 +144,7 @@ module pe_rice #(
                 end
                 bits <= full ? {nb[31:0], 32'd0} : nb;
                 cnt <= rest;
-                if (state == S_IN && esc) begin
+                if (state == S_IN && esc && !first) begin
                     state <= S_ESC;
                     esc_u <= u;
                     esc_final <= lastblk;
