@@ -66,7 +66,7 @@ module sl_tile #(
             .rclk(clk_f), .rrst(rst_f), .r_valid(out_valid), .r_ready(out_ready), .r_data(out_bus));
         sl_cfg_cdc #(.ASYNC(1'b1), .RESET(CFG_RESET)) u_cfg (
             .clk_a(clk_f), .rst_a(rst_f), .wr(cfg_wr), .wdata(cfg_wdata), .busy(cfg_busy),
-            .clk_b(clk_p), .rst_b(rst), .cfg(cfg), .clr(clr));
+            .clk_b(clk_p), .rst_b(rst), .pe_idle(pe_idle), .cfg(cfg), .clr(clr));
         always_ff @(posedge clk_p)
             if (rst) idle_p <= 1'b0;
             else idle_p <= pe_idle && !p_in_valid && out_wempty;
@@ -83,8 +83,8 @@ module sl_tile #(
         assign out_bus = {p_out_last, p_out_tag, p_out_data};
         sl_cfg_cdc #(.ASYNC(1'b0), .RESET(CFG_RESET)) u_cfg (
             .clk_a(clk_f), .rst_a(rst_f), .wr(cfg_wr), .wdata(cfg_wdata), .busy(cfg_busy),
-            .clk_b(clk_f), .rst_b(rst_f), .cfg(cfg), .clr(clr));
-        assign idle_raw = pe_idle && !p_in_valid;
+            .clk_b(clk_f), .rst_b(rst_f), .pe_idle(pe_idle), .cfg(cfg), .clr(clr));
+        assign idle_raw = pe_idle && !p_in_valid && !cfg_busy;
         wire unused_clk = clk_p ^ arst;   // this tile runs on the fabric clock
     end
 

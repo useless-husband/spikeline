@@ -1,7 +1,8 @@
 """Configuration handshake across clock domains: every word written on the
 fabric side arrives intact on the PE side, in order, exactly once, and a
-set bit 31 becomes exactly one clear pulse.  Unrelated clocks, random
-phase, CDC jitter injection on."""
+set bit 31 becomes exactly one clear pulse.  A fake PE goes busy for a few
+cycles after each clear, and the fabric side must stay busy until that
+sweep is over.  Unrelated clocks, random phase, CDC jitter injection on."""
 
 import random
 
@@ -14,16 +15,23 @@ from simrun import run
 RATIOS = [(10000, 10000), (10000, 33000), (33000, 10000), (5000, 97000), (97000, 5000)]
 
 
-async def watch_b(dut, seen, clears, stop):
+async def watch_b(dut, seen, clears, stop, sweep=7):
+    """Records cfg changes and clear pulses; plays a PE that clears for `sweep` cycles."""
     last = None
+    busy_left = 0
+    prev_clr = 0
     while not stop["done"]:
         await RisingEdge(dut.clk_b)
+        busy_left = sweep if prev_clr else max(busy_left - 1, 0)   # reacts to the clr of the last edge
+        dut.pe_idle.value = int(busy_left == 0)
+        stop["pe_busy"] = busy_left > 0
         await ReadOnly()
         v = int(dut.cfg.value)
         if v != last:
             seen.append(v)
             last = v
-        if int(dut.clr.value):
+        prev_clr = int(dut.clr.value)
+        if prev_clr:
             clears.append(len(seen))
 
 
@@ -42,6 +50,7 @@ async def every_word_arrives_once(dut):
             await RisingEdge(dut.clk_b)
         dut.rst_a.value = 0
         dut.rst_b.value = 0
+        dut.pe_idle.value = 1
         seen, clears, stop = [], [], {"done": False}
         w = cocotb.start_soon(watch_b(dut, seen, clears, stop))
         # distinct consecutive values so every update is visible on side b
@@ -56,6 +65,7 @@ async def every_word_arrives_once(dut):
                 continue
             await ReadOnly()
             busy = int(dut.busy.value)
+            assert busy or not stop.get("pe_busy"), "fabric side not busy while the PE is still clearing"
             await RisingEdge(dut.clk_a)
             if not busy:
                 dut.wr.value = 1
