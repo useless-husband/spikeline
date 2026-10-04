@@ -222,7 +222,7 @@ class Neo:
                 hit = xc * xc - xp * x[f] > (noise[f] * noise[f] * self.c) >> 16
             else:
                 hit = np.abs(xc) > (noise[f] * self.c) >> 12
-            d = bool(ready[f]) & hit & (r == 0)
+            d = np.asarray(ready[f], dtype=bool) & hit & (r == 0)   # ready: per frame or per word
             out[f] = xc
             det[f] = d
             r = np.where(d, self.refr, np.maximum(r - 1, 0))
